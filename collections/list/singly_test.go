@@ -7,9 +7,7 @@ import (
 
 func TestAddFirst(t *testing.T) {
 	myList := NewLinkedList[int]()
-	myList.AddFirst(1)
-	myList.AddFirst(3)
-	myList.AddFirst(5)
+	myList.AddFirst(1).AddFirst(3).AddFirst(5)
 
 	expected := []int{5, 3, 1}
 	values := myList.Values()
@@ -21,11 +19,48 @@ func TestAddFirst(t *testing.T) {
 
 func TestAddLast(t *testing.T) {
 	myList := NewLinkedList[int]()
-	myList.AddLast(1)
-	myList.AddLast(3)
-	myList.AddLast(5)
+	myList.AddLast(1).AddLast(3).AddLast(5)
 
 	expected := []int{1, 3, 5}
+	values := myList.Values()
+
+	if !reflect.DeepEqual(expected, values) {
+		t.Errorf("Expected %v, got %v", expected, values)
+	}
+}
+
+func TestRemoveFirst(t *testing.T) {
+	myList := NewLinkedList[int]()
+	myList.AddFirst(5).AddFirst(3).AddFirst(7)
+	myList.RemoveFirst()
+
+	expected := []int{3, 5}
+	values := myList.Values()
+
+	if !reflect.DeepEqual(expected, values) {
+		t.Errorf("Expected %v, got %v", expected, values)
+	}
+}
+
+func TestRemoveLast(t *testing.T) {
+	myList := NewLinkedList[int]()
+	myList.AddFirst(5).AddFirst(3).AddFirst(7)
+	myList.RemoveLast()
+
+	expected := []int{7, 3}
+	values := myList.Values()
+
+	if !reflect.DeepEqual(expected, values) {
+		t.Errorf("Expected %v, got %v", expected, values)
+	}
+}
+
+func TestRemoveAt(t *testing.T) {
+	myList := NewLinkedList[int]()
+	myList.AddFirst(5).AddFirst(3).AddFirst(7)
+	myList.RemoveAt(1)
+
+	expected := []int{7, 5}
 	values := myList.Values()
 
 	if !reflect.DeepEqual(expected, values) {

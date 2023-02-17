@@ -1,6 +1,9 @@
 package list
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type ListNode[T any] struct {
 	data T
@@ -10,12 +13,14 @@ type ListNode[T any] struct {
 type LinkedList[T any] struct {
 	head *ListNode[T]
 	tail *ListNode[T]
+	size int
 }
 
 func NewLinkedList[T any]() *LinkedList[T] {
 	list := LinkedList[T]{
 		nil,
 		nil,
+		0,
 	}
 	return &list
 }
@@ -28,6 +33,10 @@ func (list *LinkedList[T]) newNode(data T) *ListNode[T] {
 	return &n
 }
 
+func (list *LinkedList[T]) Len() int {
+	return list.size
+}
+
 func (list *LinkedList[T]) Front() *ListNode[T] {
 	return list.head
 }
@@ -36,7 +45,7 @@ func (node *ListNode[T]) Next() *ListNode[T] {
 	return node.next
 }
 
-func (list *LinkedList[T]) AddLast(data T) {
+func (list *LinkedList[T]) AddLast(data T) *LinkedList[T] {
 	node := list.newNode(data)
 
 	if list.Front() == nil {
@@ -45,12 +54,18 @@ func (list *LinkedList[T]) AddLast(data T) {
 		list.tail.next = node
 		list.tail = list.tail.next
 	}
+	list.size++
+
+	return list
 }
 
-func (list *LinkedList[T]) AddFirst(data T) {
+func (list *LinkedList[T]) AddFirst(data T) *LinkedList[T] {
 	node := list.newNode(data)
 	node.next = list.head
 	list.head = node
+	list.size++
+
+	return list
 }
 
 func (list *LinkedList[T]) PrintList() {
@@ -67,4 +82,39 @@ func (list *LinkedList[T]) Values() []T {
 	}
 
 	return values
+}
+
+func (list *LinkedList[T]) RemoveFirst() (T, error) {
+	return list.RemoveAt(0)
+}
+
+func (list *LinkedList[T]) RemoveLast() (T, error) {
+	return list.RemoveAt(list.Len() - 1)
+}
+
+func (list *LinkedList[T]) RemoveAt(pos int) (T, error) {
+	var data T
+
+	if pos >= list.Len() {
+		return data, errors.New("index out of bounds")
+	}
+
+	index := 0
+	curr := list.Front()
+	var prev *ListNode[T] = nil
+	for index < pos {
+		prev = curr
+		curr = curr.Next()
+		index++
+	}
+
+	data = curr.data
+	if prev == nil {
+		list.head = list.head.next
+	} else {
+		prev.next = curr.next
+	}
+	list.size--
+
+	return data, nil
 }
