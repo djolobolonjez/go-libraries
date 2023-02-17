@@ -67,3 +67,15 @@ func TestRemoveAt(t *testing.T) {
 		t.Errorf("Expected %v, got %v", expected, values)
 	}
 }
+
+func TestInsertAt(t *testing.T) {
+	myList := NewLinkedList[int]()
+	myList.InsertAt(0, 1).InsertAt(1, 3).InsertAt(1, 5)
+
+	expected := []int{1, 5, 3}
+	values := myList.Values()
+
+	if !reflect.DeepEqual(expected, values) {
+		t.Errorf("Expected %v, got %v", expected, values)
+	}
+}

@@ -25,7 +25,7 @@ func NewLinkedList[T any]() *LinkedList[T] {
 	return &list
 }
 
-func (list *LinkedList[T]) newNode(data T) *ListNode[T] {
+func (this *LinkedList[T]) newNode(data T) *ListNode[T] {
 	n := ListNode[T]{
 		data,
 		nil,
@@ -33,74 +33,74 @@ func (list *LinkedList[T]) newNode(data T) *ListNode[T] {
 	return &n
 }
 
-func (list *LinkedList[T]) Len() int {
-	return list.size
+func (this *LinkedList[T]) Len() int {
+	return this.size
 }
 
-func (list *LinkedList[T]) Front() *ListNode[T] {
-	return list.head
+func (this *LinkedList[T]) Front() *ListNode[T] {
+	return this.head
 }
 
-func (node *ListNode[T]) Next() *ListNode[T] {
-	return node.next
+func (this *ListNode[T]) Next() *ListNode[T] {
+	return this.next
 }
 
-func (list *LinkedList[T]) AddLast(data T) *LinkedList[T] {
-	node := list.newNode(data)
+func (this *LinkedList[T]) AddLast(data T) *LinkedList[T] {
+	node := this.newNode(data)
 
-	if list.Front() == nil {
-		list.head, list.tail = node, node
+	if this.Front() == nil {
+		this.head, this.tail = node, node
 	} else {
-		list.tail.next = node
-		list.tail = list.tail.next
+		this.tail.next = node
+		this.tail = this.tail.next
 	}
-	list.size++
+	this.size++
 
-	return list
+	return this
 }
 
-func (list *LinkedList[T]) AddFirst(data T) *LinkedList[T] {
-	node := list.newNode(data)
-	node.next = list.head
-	list.head = node
-	list.size++
+func (this *LinkedList[T]) AddFirst(data T) *LinkedList[T] {
+	node := this.newNode(data)
+	node.next = this.head
+	this.head = node
+	this.size++
 
-	return list
+	return this
 }
 
-func (list *LinkedList[T]) PrintList() {
-	for n := list.Front(); n != nil; n = n.Next() {
+func (this *LinkedList[T]) PrintList() {
+	for n := this.Front(); n != nil; n = n.Next() {
 		fmt.Println(n.data)
 	}
 }
 
-func (list *LinkedList[T]) Values() []T {
+func (this *LinkedList[T]) Values() []T {
 	values := []T{}
 
-	for node := list.Front(); node != nil; node = node.Next() {
+	for node := this.Front(); node != nil; node = node.Next() {
 		values = append(values, node.data)
 	}
 
 	return values
 }
 
-func (list *LinkedList[T]) RemoveFirst() (T, error) {
-	return list.RemoveAt(0)
+func (this *LinkedList[T]) RemoveFirst() (T, error) {
+	return this.RemoveAt(0)
 }
 
-func (list *LinkedList[T]) RemoveLast() (T, error) {
-	return list.RemoveAt(list.Len() - 1)
+func (this *LinkedList[T]) RemoveLast() (T, error) {
+	return this.RemoveAt(this.Len() - 1)
 }
 
-func (list *LinkedList[T]) RemoveAt(pos int) (T, error) {
+func (this *LinkedList[T]) RemoveAt(pos int) (T, error) {
 	var data T
 
-	if pos >= list.Len() {
+	if pos >= this.Len() {
 		return data, errors.New("index out of bounds")
 	}
 
 	index := 0
-	curr := list.Front()
+	curr := this.Front()
 	var prev *ListNode[T] = nil
 	for index < pos {
 		prev = curr
@@ -110,11 +110,33 @@ func (list *LinkedList[T]) RemoveAt(pos int) (T, error) {
 
 	data = curr.data
 	if prev == nil {
-		list.head = list.head.next
+		this.head = this.head.next
 	} else {
 		prev.next = curr.next
 	}
-	list.size--
+	this.size--
 
 	return data, nil
+}
+
+func (this *LinkedList[T]) InsertAt(pos int, data T) *LinkedList[T] {
+	if pos == this.Len() {
+		return this.AddLast(data)
+	} else if pos == 0 {
+		return this.AddFirst(data)
+	}
+
+	node := this.newNode(data)
+	var prev *ListNode[T]
+	curr := this.Front()
+
+	for index := 0; index < pos; index++ {
+		prev = curr
+		curr = curr.Next()
+	}
+
+	node.next = curr
+	prev.next = node
+
+	return this
 }
