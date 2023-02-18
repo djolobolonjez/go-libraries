@@ -8,6 +8,7 @@ import (
 type ListNode[T any] struct {
 	data T
 	next *ListNode[T]
+	prev *ListNode[T]
 }
 
 type LinkedList[T any] struct {
@@ -29,8 +30,18 @@ func (this *LinkedList[T]) newNode(data T) *ListNode[T] {
 	n := ListNode[T]{
 		data,
 		nil,
+		nil,
 	}
 	return &n
+}
+
+func (this *LinkedList[T]) findByIndex(pos int) *ListNode[T] {
+	curr := this.Front()
+	for index := 0; index < pos; index++ {
+		curr = curr.Next()
+	}
+
+	return curr
 }
 
 func (this *LinkedList[T]) Len() int {
@@ -45,6 +56,35 @@ func (this *ListNode[T]) Next() *ListNode[T] {
 	return this.next
 }
 
+func (this *LinkedList[T]) PeekFirst() (T, error) {
+	var data T
+	if this.Len() == 0 {
+		return data, errors.New("list is empty")
+	}
+
+	data = this.findByIndex(0).data
+
+	return data, nil
+}
+
+func (this *LinkedList[T]) PeekLast() (T, error) {
+	var data T
+	if this.Len() == 0 {
+		return data, errors.New("list is empty")
+	}
+	data = this.tail.data
+	return data, nil
+}
+
+func (this *LinkedList[T]) PeekAt(pos int) (T, error) {
+	var data T
+	if pos >= this.Len() {
+		return data, errors.New("index out of bounds")
+	}
+	data = this.findByIndex(pos).data
+	return data, nil
+}
+
 func (this *LinkedList[T]) AddLast(data T) *LinkedList[T] {
 	node := this.newNode(data)
 
@@ -52,6 +92,7 @@ func (this *LinkedList[T]) AddLast(data T) *LinkedList[T] {
 		this.head, this.tail = node, node
 	} else {
 		this.tail.next = node
+		node.prev = this.tail
 		this.tail = this.tail.next
 	}
 	this.size++
@@ -62,6 +103,11 @@ func (this *LinkedList[T]) AddLast(data T) *LinkedList[T] {
 func (this *LinkedList[T]) AddFirst(data T) *LinkedList[T] {
 	node := this.newNode(data)
 	node.next = this.head
+	if this.head != nil {
+		this.head.prev = node
+	} else {
+		this.tail = node
+	}
 	this.head = node
 	this.size++
 
@@ -99,27 +145,35 @@ func (this *LinkedList[T]) RemoveAt(pos int) (T, error) {
 		return data, errors.New("index out of bounds")
 	}
 
-	index := 0
-	curr := this.Front()
-	var prev *ListNode[T] = nil
-	for index < pos {
-		prev = curr
-		curr = curr.Next()
-		index++
+	node := this.findByIndex(pos)
+
+	data = node.data
+
+	if node.prev == nil {
+		this.head = this.head.next
+		if this.head != nil {
+			this.head.prev = nil
+		}
+	} else if node.next == nil {
+		this.tail = this.tail.prev
+		this.tail.next = nil
+	} else {
+		node.next.prev = node.prev
+		node.prev.next = node.next
+		node.prev, node.next = nil, nil
 	}
 
-	data = curr.data
-	if prev == nil {
-		this.head = this.head.next
-	} else {
-		prev.next = curr.next
-	}
 	this.size--
 
 	return data, nil
 }
 
 func (this *LinkedList[T]) InsertAt(pos int, data T) *LinkedList[T] {
+
+	if pos > this.Len() {
+		pos = this.Len()
+	}
+
 	if pos == this.Len() {
 		return this.AddLast(data)
 	} else if pos == 0 {
@@ -127,16 +181,16 @@ func (this *LinkedList[T]) InsertAt(pos int, data T) *LinkedList[T] {
 	}
 
 	node := this.newNode(data)
-	var prev *ListNode[T]
-	curr := this.Front()
-
-	for index := 0; index < pos; index++ {
-		prev = curr
-		curr = curr.Next()
-	}
+	curr := this.findByIndex(pos)
 
 	node.next = curr
-	prev.next = node
+	node.prev = curr.prev
+	if node.next != nil {
+		node.next.prev = node
+	}
+	if node.prev != nil {
+		node.prev.next = node
+	}
 
 	return this
 }

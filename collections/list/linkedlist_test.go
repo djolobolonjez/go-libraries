@@ -79,3 +79,48 @@ func TestInsertAt(t *testing.T) {
 		t.Errorf("Expected %v, got %v", expected, values)
 	}
 }
+
+func TestPeekFirst(t *testing.T) {
+	myList := NewLinkedList[int]()
+	myList.AddFirst(5).AddFirst(3).AddFirst(7)
+
+	expected := 7
+	value, err := myList.PeekFirst()
+
+	if err != nil {
+		t.Error(err)
+	}
+	if !reflect.DeepEqual(expected, value) {
+		t.Errorf("Expected %v, got %v", expected, value)
+	}
+}
+
+func TestPeekLast(t *testing.T) {
+	myList := NewLinkedList[int]()
+	myList.AddFirst(5).AddFirst(3).AddFirst(7)
+
+	expected := 5
+	value, err := myList.PeekLast()
+
+	if err != nil {
+		t.Error(err)
+	}
+	if !reflect.DeepEqual(expected, value) {
+		t.Errorf("Expected %v, got %v", expected, value)
+	}
+}
+
+func TestPeekAt(t *testing.T) {
+	myList := NewLinkedList[int]()
+	myList.AddFirst(5).AddFirst(3).AddFirst(7)
+
+	expected := 3
+	value, err := myList.PeekAt(1)
+
+	if err != nil {
+		t.Error(err)
+	}
+	if !reflect.DeepEqual(expected, value) {
+		t.Errorf("Expected %v, got %v", expected, value)
+	}
+}
