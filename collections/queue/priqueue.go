@@ -8,14 +8,10 @@ import (
 
 type PriorityQueue[T constraints.Ordered] struct {
 	data []T
-	size int
 }
 
 func NewPriorityQueue[T constraints.Ordered]() *PriorityQueue[T] {
-	q := PriorityQueue[T]{
-		make([]T, 0),
-		0,
-	}
+	q := PriorityQueue[T]{make([]T, 0)}
 
 	return &q
 }
@@ -33,7 +29,7 @@ func getParent(index int) int {
 }
 
 func (this *PriorityQueue[T]) Len() int {
-	return this.size
+	return len(this.data)
 }
 
 func (this *PriorityQueue[T]) moveUp(index int) {
@@ -74,7 +70,6 @@ func (this *PriorityQueue[T]) Top() (T, error) {
 
 func (this *PriorityQueue[T]) Push(value T) *PriorityQueue[T] {
 	this.data = append(this.data, value)
-	this.size++
 
 	this.moveUp(this.Len() - 1)
 	return this
@@ -89,7 +84,6 @@ func (this *PriorityQueue[T]) Pop() {
 
 	this.data[0] = this.data[rear]
 	this.data = this.data[:rear]
-	this.size--
 
 	this.moveDown(0)
 }

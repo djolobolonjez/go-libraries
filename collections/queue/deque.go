@@ -4,20 +4,16 @@ import "errors"
 
 type Deque[T any] struct {
 	data []T
-	size int
 }
 
 func NewDeque[T any]() *Deque[T] {
-	q := Deque[T]{
-		make([]T, 0),
-		0,
-	}
+	q := Deque[T]{make([]T, 0)}
 
 	return &q
 }
 
 func (this *Deque[T]) Len() int {
-	return this.size
+	return len(this.data)
 }
 
 func (this *Deque[T]) PushFront(value T) *Deque[T] {
@@ -25,26 +21,21 @@ func (this *Deque[T]) PushFront(value T) *Deque[T] {
 	q[0] = value
 	copy(q[1:], this.data)
 	this.data = q
-	this.size++
 
 	return this
 }
 
 func (this *Deque[T]) PushBack(value T) *Deque[T] {
 	this.data = append(this.data, value)
-	this.size++
-
 	return this
 }
 
 func (this *Deque[T]) PopBack() {
 	this.data = this.data[:this.Len()-1]
-	this.size--
 }
 
 func (this *Deque[T]) PopFront() {
 	this.data = this.data[1:]
-	this.size--
 }
 
 func (this *Deque[T]) PeekBack() (T, error) {
